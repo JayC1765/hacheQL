@@ -26,7 +26,21 @@ const app = express();
 app.use(express.json());
 
 // serve static files
-app.use(express.static(path.resolve(folderPath, '../build')));
+app.use((req, res, next) => {
+  // If we see this console log, then the request made it through to the server.
+  console.log('request received');
+  return next();
+}, express.static(path.resolve(folderPath, '../build')));
+
+app.get('/graphql/etag', (req, res) => (
+  res.set({
+    ETag: 'bacon',
+    'Cache-Control': 'max-age=600, public',
+  }).send('Old man')));
+// app.get('/graphql/etag', (req, res) => {
+//   console.log('etag requested');
+//   res.send('etag');
+// });
 
 // graphiql
 app.use('/graphql', graphqlHTTP({
