@@ -34,19 +34,29 @@ app.use((req, res, next) => {
 
 app.get('/graphql/etag', (req, res) => (
   res.set({
-    ETag: 'bacon',
+    ETag: 'carrot',
     'Cache-Control': 'max-age=600, public',
-  }).send('Old man')));
+  }).send('Something AMAZING')));
 // app.get('/graphql/etag', (req, res) => {
 //   console.log('etag requested');
 //   res.send('etag');
-// });
-
+// });  
+let data;
 // graphiql
-app.use('/graphql', graphqlHTTP({
-  schema: types.schema,
-  graphiql: true,
-}));
+app.use(
+  '/graphql',
+  (req, res, next) => {
+    res.set({
+      ETag: 'beachball',
+      'Cache-Control': 'max-age=100',
+    });
+    return next();
+  },
+  graphqlHTTP({
+    schema: types.schema,
+    graphiql: true,
+  })
+);
 
 // catch all for pages not found
 app.use((req, res) => res.sendStatus(404));
